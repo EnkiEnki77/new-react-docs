@@ -1,7 +1,7 @@
 
 import './App.css';
 import MyButton from './components/MyButton';
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Square from './components/Square';
 import Board from './components/Board';
 
@@ -17,12 +17,42 @@ function App() {
 
   const [board, setBoard] = useState(Array(9).fill(""))
   const [turn, setTurn] = useState('x')
+  const [winner, setWinner] = useState(null)
+
+  function calculateWinner(squares) {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a];
+      }
+    }
+    return null;
+  }
 
   const handleBoardClick = (squareId) => {
-    console.log(board)
-    setBoard(prev => prev.map((square, id) => squareId === id && square === "" ? turn : square))
+    //checks on every click to see if theres a winner, and if there is dowsnt allow anymore state to be set
+    //also checks that square isnt already filled. returns early in both instances.
+    if(board[squareId] || calculateWinner(board)){
+      return 
+    }
+    // its important to keep state immutable, never attempt to mutate state directly.
+    //it allows you to keep old versions of the data intact so you can reuse them or reset to them later. 
+    setBoard(prev => prev.map((square, id) => squareId === id ? turn : square))
+    setWinner(calculateWinner(board))
     setTurn(prev => prev ==='x' ? 'o' : 'x')
   }
+
+  
 
   return (
     <div className="App">
@@ -32,7 +62,6 @@ function App() {
       <MyButton count={count} onClick={handleClick}/> */}
 
       <Board board={board} handleBoard={handleBoardClick}/>
-      
     </div>
   );
 }
