@@ -15,11 +15,13 @@ function App() {
   //   setCount(count + 1)
   // }
 
-  const [board, setBoard] = useState(Array.from("         "))
+  const [board, setBoard] = useState(Array(9).fill(""))
+  const [turn, setTurn] = useState('x')
 
   const handleBoardClick = (squareId) => {
     console.log(board)
-    setBoard(prev => prev.map((square, id) => squareId === id ? 'x' : square))
+    setBoard(prev => prev.map((square, id) => squareId === id && square === "" ? turn : square))
+    setTurn(prev => prev ==='x' ? 'o' : 'x')
   }
 
   return (
